@@ -1,0 +1,16 @@
+FROM alpine
+
+RUN apk add --update maven
+RUN apk update
+RUN apk fetch openjdk8
+RUN apk add openjdk8
+ENV JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk
+ENV PATH="$JAVA_HOME/bin:${PATH}"
+
+WORKDIR '/app'
+COPY ./pom.xml ./
+RUN mvn install dependency:copy-dependencies
+COPY . .
+RUN mvn package
+
+CMD ["java", "-jar", "./target/worker-1.0-SNAPSHOT.jar"]

@@ -1,4 +1,4 @@
-package services;
+package server.services;
 
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;

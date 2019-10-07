@@ -1,5 +1,6 @@
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.ConfigurableApplicationContext;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import services.FibonacciService;
@@ -9,10 +10,8 @@ import javax.annotation.Resource;
 
 @SpringBootApplication
 public class Worker {
-    @Resource
-    private FibonacciService fibonacciService;
 
-    public void main(String[] arg) {
+    public static void main(String[] arg) {
 
         String redisHost = System.getProperty("REDIS_HOST");
         String redisPort = System.getProperty("REDIS_PORT");
@@ -20,20 +19,23 @@ public class Worker {
         final Jedis jRedisClient = new Jedis(redisHost, Integer.parseInt(redisPort));
         Jedis jRedisSubscriber = new Jedis(redisHost, Integer.parseInt(redisPort));
 
+        ConfigurableApplicationContext context = SpringApplication.run(Worker.class, arg);
+
+        final FibonacciService fibonacciService = context.getBean("fibonacciService", FibonacciService.class);
+
         jRedisSubscriber.subscribe(new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {
                 jRedisClient.hset("values", message, convert(fibonacciService.fib(convert(message))));
             }
         }, "insert");
-        SpringApplication.run(Worker.class, arg);
     }
 
 
-    private String convert(int number) {
+    private static String convert(int number) {
         return String.valueOf(number);
     }
-    private int convert(String number) {
+    private static int convert(String number) {
         return Integer.parseInt(number);
     }
 }

@@ -1,4 +1,4 @@
-package services;
+package server.services;
 
 import io.reactiverse.pgclient.PgClient;
 import io.reactiverse.pgclient.PgPool;
