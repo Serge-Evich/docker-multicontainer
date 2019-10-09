@@ -5,8 +5,6 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPubSub;
 import services.FibonacciService;
 
-import javax.annotation.Resource;
-
 
 @SpringBootApplication
 public class Worker {
